@@ -1,23 +1,32 @@
 package main
 
 import (
-	"fmt"
 	"image"
-	_ "image/png"
+	"image/png"
+	"log"
 	"os"
 )
 
 func main() {
-	file, _ := os.Open("./ref.png")
+	file, err := os.Open("./ref.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer file.Close()
 
-	config, formatName, err := image.DecodeConfig(file)
+	img, err := png.Decode(file)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	fmt.Println(formatName)
+	subimg := img.(interface {
+		SubImage(r image.Rectangle) image.Image
+	}).SubImage(image.Rect(30, 0, img.Bounds().Dx(), img.Bounds().Dy()))
 
-	fmt.Println(config.Width)
-	fmt.Println(config.Height)
+	output, outputErr := os.Create("output.png")
+	if outputErr != nil {
+		log.Fatal(outputErr)
+	}
+	defer output.Close()
+	png.Encode(output, subimg)
 }
