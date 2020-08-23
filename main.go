@@ -57,8 +57,6 @@ func crop(fp string) {
 	}
 	defer output.Close()
 	png.Encode(output, subimg)
-
-	fmt.Println(subimg.Bounds().Max.X, subimg.Bounds().Min.X)
 }
 
 func main() {
