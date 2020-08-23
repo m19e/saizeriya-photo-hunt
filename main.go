@@ -51,7 +51,7 @@ func crop(fp string) {
 		SubImage(r image.Rectangle) image.Image
 	}).SubImage(image.Rect(leftBorder, 0, imgBounds.Max.X-rightBorder, imgBounds.Max.Y))
 
-	output, outputErr := os.Create("output.png")
+	output, outputErr := os.Create("cropped.png")
 	if outputErr != nil {
 		log.Fatal(outputErr)
 	}
