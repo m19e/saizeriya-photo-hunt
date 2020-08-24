@@ -74,12 +74,28 @@ func crop(fp string) {
 
 	after := image.NewRGBA(image.Rect(0, 0, centerline-rightBorder, subBounds.Max.Y))
 	for v := subBounds.Min.Y; v < subBounds.Max.Y; v++ {
-		for h := centerline; h < subBounds.Max.X; h++ {
+		for h := centerline + 1; h < subBounds.Max.X; h++ {
 			after.Set(h-centerline, v, subimg.At(h, v))
 		}
 	}
 
 	outputPng("after.png", after)
+
+	diff := image.NewRGBA(image.Rect(0, 0, centerline-rightBorder, subBounds.Max.Y))
+
+	for dy := 0; dy < diff.Bounds().Max.Y; dy++ {
+		for dx := 0; dx < diff.Bounds().Max.X; dx++ {
+			bcR := color.RGBAModel.Convert(before.At(dx, dy)).(color.RGBA).R
+			acR := color.RGBAModel.Convert(after.At(dx, dy)).(color.RGBA).R
+			if acR == bcR || (bcR > acR && bcR-acR < 45) || (acR > bcR && acR-bcR < 45) {
+				diff.Set(dx, dy, color.RGBA{0, 0, 0, 255})
+			} else {
+				diff.Set(dx, dy, after.At(dx, dy))
+			}
+		}
+	}
+
+	outputPng("diffop.png", diff)
 }
 
 func main() {
