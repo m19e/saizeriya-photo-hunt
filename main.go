@@ -10,6 +10,15 @@ import (
 	"os"
 )
 
+func outputPng(filename string, img image.Image) {
+	output, outputErr := os.Create(filename)
+	if outputErr != nil {
+		log.Fatal(outputErr)
+	}
+	defer output.Close()
+	png.Encode(output, img)
+}
+
 func crop(fp string) {
 	file, err := os.Open(fp)
 	if err != nil {
