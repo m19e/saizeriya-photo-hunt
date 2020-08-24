@@ -60,19 +60,26 @@ func crop(fp string) {
 		SubImage(r image.Rectangle) image.Image
 	}).SubImage(image.Rect(leftBorder, 0, imgBounds.Max.X-rightBorder, imgBounds.Max.Y))
 
-	// outputPng("cropped.png", subimg)
-
 	subBounds := subimg.Bounds()
+	centerline := (subBounds.Max.X + leftBorder) / 2
 
-	before := image.NewRGBA(subBounds)
-	beforeGoal := (subBounds.Max.X + leftBorder) / 2
+	before := image.NewRGBA(image.Rect(0, 0, centerline-rightBorder, subBounds.Max.Y))
 	for v := subBounds.Min.Y; v < subBounds.Max.Y; v++ {
-		for h := subBounds.Min.X; h < beforeGoal; h++ {
-			before.Set(h, v, subimg.At(h, v))
+		for h := subBounds.Min.X; h < centerline; h++ {
+			before.Set(h-leftBorder, v, subimg.At(h, v))
 		}
 	}
 
 	outputPng("before.png", before)
+
+	after := image.NewRGBA(image.Rect(0, 0, centerline-rightBorder, subBounds.Max.Y))
+	for v := subBounds.Min.Y; v < subBounds.Max.Y; v++ {
+		for h := centerline; h < subBounds.Max.X; h++ {
+			after.Set(h-centerline, v, subimg.At(h, v))
+		}
+	}
+
+	outputPng("after.png", after)
 }
 
 func main() {
