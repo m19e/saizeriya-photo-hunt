@@ -60,12 +60,19 @@ func crop(fp string) {
 		SubImage(r image.Rectangle) image.Image
 	}).SubImage(image.Rect(leftBorder, 0, imgBounds.Max.X-rightBorder, imgBounds.Max.Y))
 
-	output, outputErr := os.Create("cropped.png")
-	if outputErr != nil {
-		log.Fatal(outputErr)
+	// outputPng("cropped.png", subimg)
+
+	subBounds := subimg.Bounds()
+
+	before := image.NewRGBA(subBounds)
+	beforeGoal := (subBounds.Max.X + leftBorder) / 2
+	for v := subBounds.Min.Y; v < subBounds.Max.Y; v++ {
+		for h := subBounds.Min.X; h < beforeGoal; h++ {
+			before.Set(h, v, subimg.At(h, v))
+		}
 	}
-	defer output.Close()
-	png.Encode(output, subimg)
+
+	outputPng("before.png", before)
 }
 
 func main() {
